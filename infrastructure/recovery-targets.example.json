@@ -1,0 +1,17 @@
+{
+  "enabled": false,
+  "policy": {
+    "account_id": "111122223333",
+    "primary_region": "ap-south-1",
+    "dr_region": "ap-southeast-1",
+    "rto_seconds": 3600,
+    "rpo_seconds": 900,
+    "resource_types": ["EC2", "RDS", "Lambda"],
+    "scope": "all-discovered-in-account",
+    "approver_group": "RecoveryApprovers",
+    "require_different_approver": true,
+    "approval_ttl_seconds": 600,
+    "automatic_cutover": false
+  },
+  "targets": []
+}

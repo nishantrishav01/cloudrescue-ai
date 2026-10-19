@@ -1,0 +1,28 @@
+{
+  "name": "cloudrescue-ai",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "infrastructure"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w frontend",
+    "build": "npm run build -w frontend",
+    "typecheck": "npm run typecheck -w frontend && npm run typecheck -w infrastructure",
+    "test:infra": "npm run test -w infrastructure",
+    "synth": "npm run synth -w infrastructure",
+    "diff": "npm run diff -w infrastructure",
+    "deploy": "npm run deploy -w infrastructure",
+    "lint": "eslint frontend/src infrastructure/bin infrastructure/lib infrastructure/test",
+    "format:check": "prettier --check frontend/src infrastructure/bin infrastructure/lib infrastructure/test"
+  },
+  "devDependencies": {
+    "@eslint/js": "9.39.1",
+    "@playwright/test": "1.56.1",
+    "eslint": "9.39.1",
+    "eslint-plugin-awscdk": "4.4.4",
+    "prettier": "3.6.2",
+    "typescript-eslint": "8.46.1"
+  }
+}

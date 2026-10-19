@@ -1,0 +1,42 @@
+{
+  "name": "CloudRescue recovery selection v1",
+  "description": "Thirty synthetic, independently labeled incident cases. Labels are never included in model requests. This is a prototype diagnostic set, not a representative production accuracy claim.",
+  "profiles": {
+    "database": {"primary_db_health":"unavailable","standby_db_health":"healthy","replication_lag_seconds":4,"rpo_target_seconds":300,"network_health":"healthy","cpu_percent":30},
+    "capacity": {"primary_db_health":"healthy","network_health":"healthy","cpu_percent":98,"capacity_policy_valid":true,"simulated_resource":"virtual-web-cluster"},
+    "replacement": {"primary_db_health":"healthy","network_health":"healthy","cpu_percent":20,"compute_health":"unhealthy","capacity_policy_valid":true,"simulated_resource":"virtual-instance-01"},
+    "network": {"primary_db_health":"healthy","network_health":"degraded","cpu_percent":24,"verified_change_id":"simulated-change-001"}
+  },
+  "cases": [
+    {"id":"db-01","profile":"database","evidence":{"connection_error_percent":88},"expected_choice":"database_failover","expected_safety_allow":true,"reason":"Primary unavailable, healthy standby, bounded lag, healthy network."},
+    {"id":"db-02","profile":"database","evidence":{"replication_lag_seconds":1,"connection_error_percent":99},"expected_choice":"database_failover","expected_safety_allow":true,"reason":"Near-current verified standby can support a virtual failover."},
+    {"id":"db-03","profile":"database","evidence":{"replication_lag_seconds":60,"connection_error_percent":75},"expected_choice":"database_failover","expected_safety_allow":true,"reason":"Replication lag remains within the explicitly allowed five-minute RPO."},
+    {"id":"db-04","profile":"database","evidence":{"replication_lag_seconds":240,"connection_error_percent":90},"expected_choice":"database_failover","expected_safety_allow":true,"reason":"Healthy standby has verified lag below the target."},
+    {"id":"db-05","profile":"database","evidence":{"replication_lag_seconds":0,"cpu_percent":15},"expected_choice":"database_failover","expected_safety_allow":true,"reason":"Database outage is isolated from compute and network."},
+    {"id":"db-06","profile":"database","evidence":{"rpo_target_seconds":60,"replication_lag_seconds":30},"expected_choice":"database_failover","expected_safety_allow":true,"reason":"The tighter one-minute RPO is still satisfied."},
+    {"id":"scale-01","profile":"capacity","evidence":{"cpu_percent":98},"expected_choice":"scale_capacity","expected_safety_allow":true,"reason":"Verified healthy dependencies and saturated compute warrant virtual scaling."},
+    {"id":"scale-02","profile":"capacity","evidence":{"cpu_percent":100,"request_rate_multiplier":5},"expected_choice":"scale_capacity","expected_safety_allow":true,"reason":"Traffic-driven saturation with known capacity policy."},
+    {"id":"scale-03","profile":"capacity","evidence":{"cpu_percent":92,"application_latency_ms":1800},"expected_choice":"scale_capacity","expected_safety_allow":true,"reason":"High CPU and application latency with healthy database and network."},
+    {"id":"scale-04","profile":"capacity","evidence":{"cpu_percent":89,"request_rate_multiplier":3},"expected_choice":"scale_capacity","expected_safety_allow":true,"reason":"Sustained compute saturation exceeds the capacity threshold."},
+    {"id":"scale-05","profile":"capacity","evidence":{"cpu_percent":96,"simulated_resource":"virtual-checkout-cluster"},"expected_choice":"scale_capacity","expected_safety_allow":true,"reason":"A named virtual cluster is saturated with valid scaling policy."},
+    {"id":"scale-06","profile":"capacity","evidence":{"cpu_percent":95,"compute_health":"healthy"},"expected_choice":"scale_capacity","expected_safety_allow":true,"reason":"Healthy but overloaded compute needs capacity rather than replacement."},
+    {"id":"replace-01","profile":"replacement","evidence":{"instance_status_check":"failed"},"expected_choice":"replace_unhealthy_compute","expected_safety_allow":true,"reason":"An explicitly unhealthy virtual instance has healthy external dependencies."},
+    {"id":"replace-02","profile":"replacement","evidence":{"cpu_percent":0,"instance_status_check":"failed"},"expected_choice":"replace_unhealthy_compute","expected_safety_allow":true,"reason":"An unresponsive verified instance should be replaced, not scaled for load."},
+    {"id":"replace-03","profile":"replacement","evidence":{"cpu_percent":12,"application_process":"crashed"},"expected_choice":"replace_unhealthy_compute","expected_safety_allow":true,"reason":"Verified unhealthy compute with a crashed application and a known virtual target."},
+    {"id":"replace-04","profile":"replacement","evidence":{"cpu_percent":18,"simulated_resource":"virtual-worker-02"},"expected_choice":"replace_unhealthy_compute","expected_safety_allow":true,"reason":"An identified unhealthy worker is replaceable under the capacity policy."},
+    {"id":"network-01","profile":"network","evidence":{"connection_error_percent":72},"expected_choice":"investigate_network","expected_safety_allow":true,"reason":"Degraded network follows a verified simulated change."},
+    {"id":"network-02","profile":"network","evidence":{"verified_change_id":"simulated-route-002","route_health":"failed"},"expected_choice":"investigate_network","expected_safety_allow":true,"reason":"A specific route change is evidence for investigation, not a blind rollback."},
+    {"id":"network-03","profile":"network","evidence":{"verified_change_id":"simulated-sg-003","connection_error_percent":99},"expected_choice":"investigate_network","expected_safety_allow":true,"reason":"Verified simulated security-group change correlates with connectivity errors."},
+    {"id":"network-04","profile":"network","evidence":{"dns_health":"degraded","verified_change_id":"simulated-dns-004"},"expected_choice":"investigate_network","expected_safety_allow":true,"reason":"Known DNS change with network degradation requires investigation."},
+    {"id":"network-05","profile":"network","evidence":{"cpu_percent":10,"connection_error_percent":65},"expected_choice":"investigate_network","expected_safety_allow":true,"reason":"Low CPU and healthy database isolate evidence toward the network."},
+    {"id":"network-06","profile":"network","evidence":{"verified_change_id":"simulated-nacl-006","health_checks":"failing"},"expected_choice":"investigate_network","expected_safety_allow":true,"reason":"A verified network configuration change must be inspected."},
+    {"id":"ambiguous-01","profile":"database","evidence":{"standby_db_health":"unknown"},"expected_choice":"escalate_to_human","expected_safety_allow":false,"reason":"Standby health is unavailable."},
+    {"id":"ambiguous-02","profile":"database","evidence":{"replication_lag_seconds":null},"expected_choice":"escalate_to_human","expected_safety_allow":false,"reason":"Replication evidence is missing."},
+    {"id":"ambiguous-03","profile":"database","evidence":{"replication_lag_seconds":900},"expected_choice":"escalate_to_human","expected_safety_allow":false,"reason":"Failover would exceed the declared RPO."},
+    {"id":"ambiguous-04","profile":"capacity","evidence":{"network_health":"degraded","primary_db_health":"unavailable","conflicting_evidence":true},"expected_choice":"escalate_to_human","expected_safety_allow":false,"reason":"Concurrent symptoms are explicitly conflicting."},
+    {"id":"ambiguous-05","profile":"capacity","evidence":{"capacity_policy_valid":false},"expected_choice":"escalate_to_human","expected_safety_allow":false,"reason":"Scaling authorization prerequisites are not verified."},
+    {"id":"ambiguous-06","profile":"network","evidence":{"verified_change_id":null},"expected_choice":"escalate_to_human","expected_safety_allow":false,"reason":"No verified change supports the network playbook."},
+    {"id":"ambiguous-07","profile":"database","evidence":{},"evidence_age_seconds":1200,"expected_choice":"escalate_to_human","expected_safety_allow":false,"reason":"Evidence is older than the fifteen-minute safety window."},
+    {"id":"ambiguous-08","profile":"replacement","evidence":{"simulated_resource":null},"expected_choice":"escalate_to_human","expected_safety_allow":false,"reason":"The unhealthy compute target is not identified."}
+  ]
+}

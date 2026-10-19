@@ -1,0 +1,6 @@
+{
+  "owner": "team@example.com",
+  "costCenter": "development",
+  "enableDecider": false,
+  "deciderRuntime": "fargate"
+}

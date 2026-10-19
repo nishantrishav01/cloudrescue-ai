@@ -1,0 +1,4 @@
+fastapi==0.119.1
+mangum==0.19.0
+boto3==1.40.55
+strands-agents==1.13.0
