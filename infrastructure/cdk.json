@@ -2,7 +2,6 @@
   "app": "npx tsx bin/app.ts",
   "context": {
     "environment": "dev",
-    "costCenter": "development",
     "bedrockModelId": "apac.amazon.nova-lite-v1:0",
     "bedrockModelRegions": [
       "ap-south-1",
