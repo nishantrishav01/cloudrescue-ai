@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from scripts.check_publication import audit
 
 
@@ -40,3 +42,17 @@ def test_unreviewed_binary_content_is_rejected():
     assert (
         audit(["unknown.bin"], lambda path: b"\x00\x01", [])[0]["rule"] == "unexpected-binary-file"
     )
+
+
+def test_reviewed_demo_screenshot_is_allowed_only_at_approved_path():
+    filename = "assets/cloudrescue-war-room.png"
+    content = (Path(__file__).resolve().parent.parent / filename).read_bytes()
+    assert audit([filename], lambda path: content, []) == []
+    assert audit(["other.png"], lambda path: content, [])[0]["rule"] == "unexpected-binary-file"
+
+
+def test_changed_screenshot_requires_another_privacy_review():
+    filename = "assets/cloudrescue-war-room.png"
+    assert audit([filename], lambda path: b"replacement image", []) == [
+        {"path": filename, "rule": "image-requires-privacy-review"}
+    ]

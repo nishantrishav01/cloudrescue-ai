@@ -2,6 +2,10 @@
 
 An AWS incident investigation dashboard with real resource discovery, timestamped CloudWatch measurements, Strands Decider recommendations and Amazon Bedrock explanations.
 
+![CloudRescue AI front screen showing the incident war room, infrastructure map and decision center](assets/cloudrescue-war-room.png)
+
+*Application preview with illustrative demo data. No live AWS account information is shown.*
+
 **Safety boundary:** synthetic recovery scenarios are separate from live investigations. Live AI investigation is read-only. The real EC2/RDS restoration adapter is disabled by default and is not a production-ready regional failover solution.
 
 ## Features

@@ -1,4 +1,5 @@
 import argparse
+import hashlib
 import json
 import re
 import subprocess
@@ -22,6 +23,9 @@ PRIVATE_FILES = {
     "infrastructure/recovery-targets.json",
     "infrastructure/outputs.json",
     "backend/lambda.zip",
+}
+REVIEWED_IMAGES = {
+    "assets/cloudrescue-war-room.png": "51c5377c5ff3247e07064a2d7ec71b332a0a82d8c0114efbc8791a4092262550",
 }
 SECRET_PATTERNS = {
     "aws-access-key": re.compile(r"\b(?:AKIA|ASIA)[A-Z0-9]{16}\b"),
@@ -51,6 +55,10 @@ def audit(paths: list[str], read_content, denied_values: list[str]) -> list[dict
         ):
             findings.append({"path": filename, "rule": "private-or-generated-path"})
         content = read_content(filename)
+        if filename in REVIEWED_IMAGES:
+            if hashlib.sha256(content).hexdigest() != REVIEWED_IMAGES[filename]:
+                findings.append({"path": filename, "rule": "image-requires-privacy-review"})
+            continue
         if b"\x00" in content:
             findings.append({"path": filename, "rule": "unexpected-binary-file"})
             continue

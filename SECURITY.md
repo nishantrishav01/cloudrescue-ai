@@ -14,6 +14,8 @@ The following paths are deliberately ignored:
 
 Use the committed `.example.json` configuration files as templates. The example account ID is fictitious. Never place credentials in those files. Obtain AWS credentials through authorized CLI sessions and runtime IAM roles; store GitHub authentication in the operating system credential store.
 
+The public README screenshot at `assets/cloudrescue-war-room.png` is a visually reviewed demo, not a live deployment capture. The publication audit allows only its reviewed SHA-256 digest. Replacing it requires a fresh visual privacy review and an updated digest; secret scanners cannot detect sensitive information displayed inside an image.
+
 ## Before every push
 
 1. Review `git diff --cached` and `git diff --cached --name-only`; ignored files can still be force-added, so never rely on `.gitignore` alone.
