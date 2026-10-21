@@ -119,6 +119,16 @@ With your own authorized deployed configuration, the synthetic model evaluation 
 
 This makes real AWS/model calls and may incur charges. Expected labels are not sent to the model. Results, actual account/runtime metadata and all screenshots stay local and are excluded from Git. Synthetic classification results do not establish production accuracy or achieved DR RTO/RPO.
 
+## Reusable Decider decision pattern
+
+[Recovery playbook policy classification](patterns/recovery-playbook-selection/README.md) includes the typed question, five response categories, agent integration, both inference adapters and reuse instructions. Decider classifies incident evidence before deterministic safety checks and Bedrock explanation; it does not autonomously execute production recovery.
+
+Submission pattern tags: `#strands-decider-2b` and `#policy`.
+
+## License
+
+Application source and the reusable pattern are available under the [MIT license](LICENSE). Third-party dependencies, model weights and AWS services retain their respective licenses and terms.
+
 ## Publication boundary
 
 This public repository contains source, tests and synthetic examples only. Detailed application/deployment documentation, account-specific configuration, operational records, measured reports and runtime data remain local and are ignored.
